@@ -2,16 +2,14 @@ package curiosity_core.kdymowsk_A3;
 
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 
-
-import curiosity_core.criminalintent.R;
 
 /**
  * Created by curiosity-core on 2/17/16.
  */
-public abstract class SingleFragmentActivity extends FragmentActivity {
+public abstract class SingleFragmentActivity extends AppCompatActivity {
     protected abstract android.support.v4.app.Fragment createFragment();
 
     @Override
