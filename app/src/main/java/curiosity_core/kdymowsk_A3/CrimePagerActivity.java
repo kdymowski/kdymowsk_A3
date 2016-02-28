@@ -17,13 +17,16 @@ import java.util.UUID;
 /**
  * Created by curiosity-core on 2/25/16.
  */
-public class CrimePagerActivity extends AppCompatActivity {
+public class CrimePagerActivity extends AppCompatActivity implements CrimeFragment.Callbacks {
     private static final String EXTRA_CRIME_ID =
             "crime_id";
-
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
 
+    @Override
+    public void onCrimeUpdated(Crime crime){
+
+    }
     public static Intent newIntent(Context packageContext, UUID crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
