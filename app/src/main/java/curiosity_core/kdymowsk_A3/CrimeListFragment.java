@@ -12,7 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -28,6 +30,8 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter;
     private boolean mSubtitleVisible;
     private Callbacks mCallbacks;
+    private Button mNewCrimeButton;
+    private TextView mNewCrimeText;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
     public interface Callbacks{
@@ -44,12 +48,17 @@ public class CrimeListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
+
+
+
+
         mCrimeRecyclerView = (RecyclerView) view
                 .findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -58,7 +67,33 @@ public class CrimeListFragment extends Fragment {
         }
         updateUI();
 
+        mNewCrimeText = (TextView) view.findViewById(R.id.empty_text);
+        mNewCrimeButton = (Button) view.findViewById(R.id.empty_button);
+        mNewCrimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newCrimeButtonHandler();
+            }
+        });
+
+        if(CrimeLab.get(getActivity()).getCrimeSize() < 1) {
+            mCrimeRecyclerView.setVisibility(View.INVISIBLE);
+            mNewCrimeButton.setVisibility(View.VISIBLE);
+            mNewCrimeText.setVisibility(View.VISIBLE);
+        } else{
+            mCrimeRecyclerView.setVisibility(View.VISIBLE);
+            mNewCrimeButton.setVisibility(View.INVISIBLE);
+            mNewCrimeText.setVisibility(View.INVISIBLE);
+        }
+
         return view;
+    }
+
+    private void newCrimeButtonHandler() {
+        Crime crime = new Crime();
+        CrimeLab.get(getActivity()).addCrime(crime);
+        updateUI();
+        mCallbacks.onCrimeSelected(crime);
     }
 
     @Override
@@ -114,7 +149,9 @@ public class CrimeListFragment extends Fragment {
     private void updateSubtitle() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
-        String subtitle = getString(R.string.subtitle_format, crimeCount);
+        //String subtitle = getString(R.string.subtitle_format, crimeCount);
+        String subtitle = getResources()
+                .getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount);
 
         if (!mSubtitleVisible) {
             subtitle = null;

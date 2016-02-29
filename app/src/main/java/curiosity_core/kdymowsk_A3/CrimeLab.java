@@ -59,4 +59,8 @@ public class CrimeLab {
         mCrimes.remove(crime);
     }
 
+    public int getCrimeSize() {
+        return mCrimes.size();
+    }
+
 }

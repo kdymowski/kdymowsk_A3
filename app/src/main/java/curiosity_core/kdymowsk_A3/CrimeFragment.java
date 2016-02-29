@@ -19,6 +19,8 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,8 +71,6 @@ public class CrimeFragment extends Fragment {
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_CRIME_ID, crimeId);
-
-
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
         return fragment;
@@ -88,6 +88,7 @@ public class CrimeFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -194,15 +195,24 @@ public class CrimeFragment extends Fragment {
         mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
         updatePhotoView();
 
-        mDeleteButton = (Button) v.findViewById(R.id.delete_button);
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CrimeLab.get(getActivity()).deleteCrime(mCrime);
-                onStop();
-            }
-        });
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.crime_context, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_delete_crime:
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
+                getActivity().onBackPressed();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
