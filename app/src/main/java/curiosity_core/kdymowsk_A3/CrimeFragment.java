@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.UUID;
 
 
-import curiosity_core.kdymowsk_A3.R;
 
 
 /**
@@ -64,10 +63,19 @@ public class CrimeFragment extends Fragment {
     private Button mDeleteButton;
     private static final String TAG = "CrimeFragment";
 
+    /**
+     * Callbacks interface
+     */
     public interface Callbacks {
         void onCrimeUpdated(Crime crime);
+        void onCrimeDeleted(Crime crime);
     }
 
+    /**
+     * CrimeFragment
+     * @param crimeId
+     * @return
+     */
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_CRIME_ID, crimeId);
@@ -76,18 +84,27 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * override onAttach
+     * @param activity
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mCallbacks = (Callbacks)activity;
     }
 
+    /**
+     * onCreate it creates stuff 
+     * @param saveInstanceState
+     */
     @Override
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
-        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        if (mCrime != null)
+            mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
         setHasOptionsMenu(true);
     }
 
@@ -193,10 +210,22 @@ public class CrimeFragment extends Fragment {
         });
 
         mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                /*ImageFragment dialog = DatePickerFragment
+                        .newInstance(mCrime.);
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.show(manager, DIALOG_DATE);*/
+            }
+        });
         updatePhotoView();
 
         return v;
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -208,8 +237,8 @@ public class CrimeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_delete_crime:
-                CrimeLab.get(getActivity()).deleteCrime(mCrime);
-                getActivity().onBackPressed();
+                mCallbacks.onCrimeDeleted(mCrime);
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -258,6 +287,7 @@ public class CrimeFragment extends Fragment {
         }
     }
     private void updateCrime() {
+        //CrimeLab.get(getActivity()).updateCrime(mCrime);
         mCallbacks.onCrimeUpdated(mCrime);
     }
 
@@ -302,6 +332,8 @@ public class CrimeFragment extends Fragment {
         Log.d(TAG, "onAttach() called");
     }
 
+
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -324,8 +356,8 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-       // CrimeLab.get(getActivity()).updateCrime(mCrime);
-        mCallbacks.onCrimeUpdated( mCrime );
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
+
         Log.d(TAG, "onPause() called");
     }
 

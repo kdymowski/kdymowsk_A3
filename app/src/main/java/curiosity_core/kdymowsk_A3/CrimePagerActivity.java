@@ -27,6 +27,11 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
     public void onCrimeUpdated(Crime crime){
 
     }
+    @Override
+    public void onCrimeDeleted(Crime crime){
+        CrimeLab crimelab =  CrimeLab.get(this);
+        crimelab.deleteCrime(crime);
+    }
     public static Intent newIntent(Context packageContext, UUID crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
@@ -63,4 +68,5 @@ public class CrimePagerActivity extends AppCompatActivity implements CrimeFragme
             }
         }
     }
+
 }
