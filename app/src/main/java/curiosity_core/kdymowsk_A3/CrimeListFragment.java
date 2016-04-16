@@ -165,12 +165,21 @@ public class CrimeListFragment extends Fragment {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
         if(mAdapter == null) {
+
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
         }
+
+        if (CrimeLab.get(getActivity()).getCrimes().size() == 0){
+            mCrimeRecyclerView.setVisibility(View.GONE);
+        }else
+            mCrimeRecyclerView.setVisibility(View.VISIBLE);
+            mNewCrimeButton.setVisibility(View.GONE);
+            mNewCrimeText.setVisibility(View.VISIBLE);
+
         updateSubtitle();
     }
 
